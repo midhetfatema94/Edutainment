@@ -17,63 +17,48 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-//            if showingGame {
-//
-//            } else {
-                VStack(spacing: 40) {
-                    VStack(spacing: 20) {
-                        Text("How many multiplication tables do you know?")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color.red)
-                            .multilineTextAlignment(.center)
-                            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
-                        VStack(spacing: 5) {
+            VStack(spacing: 40) {
+                VStack(spacing: 20) {
+                    Text("How many multiplication tables do you know?")
+                        .gameTitleStyle(color: Color.red)
+                        .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+                    VStack(spacing: 5) {
+                        Text("\(tableCount)")
+                            .gameTitleStyle(color: Color.green)
+                        Stepper(value: $tableCount, in: 1...12) {
                             Text("\(tableCount)")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .foregroundColor(Color.green)
-                                .multilineTextAlignment(.center)
-                            Stepper(value: $tableCount, in: 1...12) {
-                                Text("\(tableCount)")
-                            }
-                            .labelsHidden()
                         }
-                    }
-                    
-                    VStack(spacing: 20) {
-                        Text("How many questions should I ask you?")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color.blue)
-                            .multilineTextAlignment(.center)
-                        Picker("No of questions", selection: $noOfQuestionsIndex, content: {
-                            ForEach(0 ..< noOfQuestions.count) {
-                                Text(noOfQuestions[$0])
-                            }
-                        })
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding(EdgeInsets(top: 3, leading: 50, bottom: 5, trailing: 50))
-                    }
-                    
-                    HStack{
-                        Spacer()
-                        Button(action: createQuestions, label: {
-                            Text("Start Playing")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .foregroundColor(Color.white)
-                                
-                        })
-                        .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
-                        .background(Color.yellow)
-                        .clipShape(Capsule())
-                        Spacer()
+                        .labelsHidden()
                     }
                 }
-                .navigationTitle("Edutainment")
-                .navigate(to: GameView(allQs: questions), navBarTitle: "Game Show", when: $showingGame)
-//            }
+                
+                VStack(spacing: 20) {
+                    Text("How many questions should I ask you?")
+                        .gameTitleStyle(color: Color.blue)
+                    Picker("No of questions", selection: $noOfQuestionsIndex, content: {
+                        ForEach(0 ..< noOfQuestions.count) {
+                            Text(noOfQuestions[$0])
+                        }
+                    })
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding(EdgeInsets(top: 3, leading: 50, bottom: 5, trailing: 50))
+                }
+                
+                HStack{
+                    Spacer()
+                    Button(action: createQuestions, label: {
+                        Text("Start Playing")
+                            .gameTitleStyle(color: Color.white)
+                            
+                    })
+                    .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+                    .background(Color.yellow)
+                    .clipShape(Capsule())
+                    Spacer()
+                }
+            }
+            .navigationTitle("Edutainment")
+            .navigate(to: GameView(allQs: questions), navBarTitle: "Game Show", when: $showingGame)
         }
     }
     
@@ -102,7 +87,6 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 extension View {
-
     /// Navigate to a new view.
     /// - Parameters:
     ///   - view: View to navigate to.

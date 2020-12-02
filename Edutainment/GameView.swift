@@ -19,14 +19,9 @@ struct GameView: View {
         VStack {
             VStack(spacing: 20) {
                 Text("Question No. \(questionIndex + 1)")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
+                    .gameTitleStyle(color: Color.black)
                 Text("\(allQs[questionIndex]) = ?")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(Color.purple)
-                    .multilineTextAlignment(.center)
+                    .gameTitleStyle(color: Color.purple)
                 TextField("\(allQs[questionIndex])", text: $answer, onCommit: calculateScore)
                     .font(.largeTitle)
                     .frame(width: 100, height: 100, alignment: .center)
@@ -35,19 +30,14 @@ struct GameView: View {
                     .multilineTextAlignment(.center)
                 Button(action: calculateScore, label: {
                     Text("Next Question")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.white)
+                        .gameTitleStyle(color: Color.white)
                         
                 })
                 .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
                 .background(Color.blue)
                 .clipShape(Capsule())
                 Text("Total Score: \(totalScore)")
-                    .font(.largeTitle)
-                    .fontWeight(.black)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(Color.yellow)
+                    .gameTitleStyle(color: Color.yellow)
             }
         }
         .padding()
@@ -80,5 +70,15 @@ struct GameView: View {
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
         GameView()
+    }
+}
+
+extension Text {
+    func gameTitleStyle(color: Color) -> some View {
+        self
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .multilineTextAlignment(.center)
+            .foregroundColor(Color.purple)
     }
 }
