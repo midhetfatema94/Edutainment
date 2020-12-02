@@ -17,36 +17,63 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                if showingGame {
-                    GameView(allQs: questions)
-                } else {
-                    Form {
-                        Section(header: Text("I know multiplication tables upto: ")) {
+//            if showingGame {
+//
+//            } else {
+                VStack(spacing: 40) {
+                    VStack(spacing: 20) {
+                        Text("How many multiplication tables do you know?")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.red)
+                            .multilineTextAlignment(.center)
+                            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+                        VStack(spacing: 5) {
+                            Text("\(tableCount)")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color.green)
+                                .multilineTextAlignment(.center)
                             Stepper(value: $tableCount, in: 1...12) {
                                 Text("\(tableCount)")
                             }
-                        }
-                        Section(header: Text("How many questions to ask?")) {
-                            Picker("Tip percentage", selection: $noOfQuestionsIndex, content: {
-                                ForEach(0 ..< noOfQuestions.count) {
-                                    Text(noOfQuestions[$0])
-                                }
-                            }).pickerStyle(SegmentedPickerStyle())
-                        }
-                        Section {
-                            HStack{
-                                Spacer()
-                                Button(action: createQuestions, label: {
-                                    Text("Start Playing")
-                                })
-                                Spacer()
-                            }
+                            .labelsHidden()
                         }
                     }
+                    
+                    VStack(spacing: 20) {
+                        Text("How many questions should I ask you?")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.blue)
+                            .multilineTextAlignment(.center)
+                        Picker("No of questions", selection: $noOfQuestionsIndex, content: {
+                            ForEach(0 ..< noOfQuestions.count) {
+                                Text(noOfQuestions[$0])
+                            }
+                        })
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding(EdgeInsets(top: 3, leading: 50, bottom: 5, trailing: 50))
+                    }
+                    
+                    HStack{
+                        Spacer()
+                        Button(action: createQuestions, label: {
+                            Text("Start Playing")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color.white)
+                                
+                        })
+                        .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+                        .background(Color.yellow)
+                        .clipShape(Capsule())
+                        Spacer()
+                    }
                 }
-            }
-            .navigationTitle("Edutainment")
+                .navigationTitle("Edutainment")
+                .navigate(to: GameView(allQs: questions), navBarTitle: "Game Show", when: $showingGame)
+//            }
         }
     }
     
@@ -54,7 +81,7 @@ struct ContentView: View {
         var allQuestions = [String]()
         for firstIndex in 1...tableCount {
             for secondIndex in 1...tableCount {
-                allQuestions.append("\(firstIndex)x\(secondIndex)")
+                allQuestions.append("\(firstIndex) x \(secondIndex)")
             }
         }
         allQuestions.shuffle()
@@ -63,45 +90,8 @@ struct ContentView: View {
         } else {
             questions = allQuestions
         }
+        print("questions: ", questions)
         showingGame = true
-    }
-}
-
-struct GameView: View {
-    
-    @State var allQs = [String]()
-    @State var answer = ""
-    @State var totalScore = 0
-    @State var questionIndex = 0
-    
-    var body: some View {
-        VStack {
-            HStack {
-                Text("Q\(questionIndex + 1): \(allQs[questionIndex])")
-                TextField("\(allQs[questionIndex])", text: $answer, onCommit: calculateScore)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
-            }
-            Text("Total Score: \(totalScore)")
-        }
-        .padding()
-    }
-    
-    func calculateScore() {
-        let numbers = allQs[questionIndex].lowercased().components(separatedBy: "x")
-        if let lhs = Int(numbers.first ?? ""), let rhs = Int(numbers.last ?? "") {
-            if let myAnswer = Int(answer) {
-                if myAnswer == lhs * rhs {
-                    totalScore += 1
-                }
-            }
-        }
-        answer = ""
-        if questionIndex < allQs.count - 1 {
-            questionIndex += 1
-        } else {
-            //Game has completed
-        }
     }
 }
 
@@ -111,6 +101,23 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-extension Collection {
-    func choose(_ n: Int) -> ArraySlice<Element> { shuffled().prefix(n) }
+extension View {
+
+    /// Navigate to a new view.
+    /// - Parameters:
+    ///   - view: View to navigate to.
+    ///   - binding: Only navigates when this condition is `true`.
+    func navigate<NewView: View>(to view: NewView, navBarTitle: String, when binding: Binding<Bool>) -> some View {
+        ZStack {
+            self
+            NavigationLink(
+                destination: view
+                    .navigationBarTitle(navBarTitle)
+                    .navigationBarHidden(false),
+                isActive: binding
+            ) {
+                EmptyView()
+            }
+        }
+    }
 }
